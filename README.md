@@ -35,3 +35,6 @@ Advanced Usage
 ---------------
 You can have multiple uExport nodes in one scene, not only to represent each character, but even in one export file when breaking up characters into multiple exported FBX files on disk:
 ![alt tag](http://chrisevans3d.com/files/github/uexport01.png)
+
+__Batching__<br>
+If you are using uExport to markup your characters, there are sample server tasks in the [mayaTaskServer repo](https://github.com/chrisevans3d/mayaTaskServer) to batch exports and animations.
