@@ -19,8 +19,12 @@ __Features:__
   * export skeleton
   * rendermeshes
   * LODs
+  * blendshapes
 * UI to create and edit export markup
 * Fire arbitrary python scripts assoc with any export (useful for LODs)
+* Simple sanity checking
+ * No skeleton set
+ * Meshes not skinned
 
 Under the Hood
 ---------------
