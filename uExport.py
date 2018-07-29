@@ -26,13 +26,15 @@ import maya.OpenMayaUI as openMayaUI
 import maya.mel as mel
 
 # legacy support
-from Qt import QtGui, QtWidgets, QtCore
-if cmds.about(v=True) <= "2016":
-    import shiboken
-    import pysideuic
-else:
+from Qtpy.Qt import QtWidgets, QtCore
+
+mayaApi = cmds.about(api=True)
+if mayaApi >= 201700:
     import shiboken2 as shiboken
     import pyside2uic as pysideuic
+else:
+    import shiboken
+    import pysideuic
 
 def show():
     global uExportToolWindow
@@ -553,9 +555,9 @@ class uExportTool(base_class, form_class):
 
         ## Connect UI
         ########################################################################
-        self.connect(self.export_BTN, QtCore.SIGNAL("clicked()"), self.export_FN)
-        self.connect(self.createUexportNode_BTN, QtCore.SIGNAL("clicked()"), self.createUexportNode_FN)
-        self.connect(self.replaceUnknownNodes, QtCore.SIGNAL("clicked()"), self.replaceUnknownNodes_FN)
+        self.export_BTN.clicked.connect(self.export_FN)
+        self.createUexportNode_BTN.clicked.connect(self.createUexportNode_FN)
+        self.replaceUnknownNodes.clicked.connect(self.replaceUnknownNodes_FN)
         self.refreshBTN.clicked.connect(self.refreshUI)
         self.getTexturesP4BTN.clicked.connect(self.getTexturesP4_FN)
 
@@ -566,11 +568,11 @@ class uExportTool(base_class, form_class):
 
         #context menu
         self.export_tree.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.connect(self.export_tree, QtCore.SIGNAL("customContextMenuRequested(QPoint)" ), self.openMenu)
+        self.export_tree.customContextMenuRequested.connect(self.openMenu)
 
         self.export_tree.itemClicked.connect(self.check_status)
-        self.connect(self.export_tree, QtCore.SIGNAL("itemClicked(QTreeWidgetItem*, int)"), self.itemClicked)
-        self.connect(self.missingFilesTree, QtCore.SIGNAL("itemClicked(QTreeWidgetItem*, int)"), self.itemClicked)
+        self.export_tree.itemClicked.connect(self.itemClicked)
+        self.missingFilesTree.itemClicked.connect(self.itemClicked)
 
 
         #check for p4 lib
@@ -846,10 +848,10 @@ class uExportTool(base_class, form_class):
     def buildExportTree(self, uNodes):
         for uNode in uNodes:
 
-            red = QtGui.QColor(200, 75, 75, 255)
-            widRed = QtGui.QColor(200, 75, 75, 100)
-            blue = QtGui.QColor(50, 130, 210, 255)
-            widBlue = QtGui.QColor(50, 130, 210, 100)
+            red = QtWidgets.QColor(200, 75, 75, 255)
+            widRed = QtWidgets.QColor(200, 75, 75, 100)
+            blue = QtWidgets.QColor(50, 130, 210, 255)
+            widBlue = QtWidgets.QColor(50, 130, 210, 100)
 
             #top level
             wid1 = QtWidgets.QTreeWidgetItem()
@@ -870,7 +872,7 @@ class uExportTool(base_class, form_class):
             wid1.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsSelectable)
             wid1.setCheckState(0, QtCore.Qt.Checked)
 
-            wid1.setBackground(0, QtGui.QColor(widBlue))
+            wid1.setBackground(0, QtWidgets.QColor(widBlue))
 
             #mesh branch
             meshTop = QtWidgets.QTreeWidgetItem()
@@ -1405,7 +1407,7 @@ class uExportTool(base_class, form_class):
                                     dupeCheck(files[i]['depotFile'])
 
                                 #color widget red, change INFO
-                                widc = self.colorTreeWidgetItemByName(self.missingFilesTree, f, QtGui.QColor(200, 75, 75, 255))
+                                widc = self.colorTreeWidgetItemByName(self.missingFilesTree, f, QtWidgets.QColor(200, 75, 75, 255))
                                 widc.setText(1, 'NOT FOUND')
 
                             except Exception as e:
@@ -1419,7 +1421,7 @@ class uExportTool(base_class, form_class):
                 else:
                     print 'rePathFileNodesP4>>>> FILE NOT FOUND IN PERFORCE SEARCH PATH - fName:', f, 'searchPath:', self.p4RootLINE.text()
                     #color widget red, change INFO
-                    widc = self.colorTreeWidgetItemByName(self.missingFilesTree, f, QtGui.QColor(200, 75, 75, 255))
+                    widc = self.colorTreeWidgetItemByName(self.missingFilesTree, f, QtWidgets.QColor(200, 75, 75, 255))
                     widc.setText(1, 'NOT FOUND')
 
 
@@ -1442,7 +1444,7 @@ class uExportTool(base_class, form_class):
                     if debug: print 'rePathFileNodesP4>>>> NEW PATH>>', newPath, '\n\n'
                     cmds.setAttr((missingFileDict[f]['node'] + '.fileTextureName'), newPath, type='string')
                     #color widget green, change info
-                    widc = self.colorTreeWidgetItemByName(self.missingFilesTree, f, QtGui.QColor(40, 230, 160, 255))
+                    widc = self.colorTreeWidgetItemByName(self.missingFilesTree, f, QtWidgets.QColor(40, 230, 160, 255))
                     widc.setText(1, 'FOUND')
 
                 self.repaint()
